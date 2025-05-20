@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "296815148905",
+    "project_id": "handwerkrgb",
+    "storage_bucket": "handwerkrgb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:296815148905:android:9567ed11b9cfada5e607f8",
+        "android_client_info": {
+          "package_name": "com.example.nexus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvlGexG7nSBW3xyzFTsQJUbZ0jo7LwcTY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:296815148905:android:dd61c70c0ee244c5e607f8",
+        "android_client_info": {
+          "package_name": "com.handwerk.fixly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvlGexG7nSBW3xyzFTsQJUbZ0jo7LwcTY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
