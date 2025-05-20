@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../services/auth_helpers.dart';
-import '../widgets/app_shell.dart';
+import '../../services/auth_helpers.dart';
 import 'account_main.dart';
 
 class RegisterBody extends StatefulWidget {
@@ -22,34 +21,34 @@ class _RegisterBodyState extends State<RegisterBody> {
 
   Future<void> _register() async {
     final email = emailController.text.trim();
-    final password = passwordController.text.trim();
+    final pass = passwordController.text.trim();
     final confirm = confirmPasswordController.text.trim();
+
     if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ungültige E-Mail')));
       return;
     }
-    if (password.length < 6) {
+    if (pass.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Passwort min. 6 Zeichen')));
       return;
     }
-    if (password != confirm) {
+    if (pass != confirm) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Passwörter stimmen nicht überein')));
       return;
     }
 
     setState(() => isLoading = true);
     try {
-      final cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email, password: password);
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email, password: pass);
       await handleUserCreation(
         name: nameController.text.trim(),
         address: addressController.text.trim(),
         phone: phoneController.text.trim(),
       );
+      // beide Sheets (Register & AuthChoice) schließen
       Navigator.of(context).pop();
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const AccountMainPage()),
-      );
+      Navigator.of(context).pop();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Fehler: $e')));
     } finally {

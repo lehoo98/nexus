@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../widgets/app_shell.dart';
 import 'account_main.dart';
 
 class LoginBody extends StatefulWidget {
@@ -22,11 +21,10 @@ class _LoginBodyState extends State<LoginBody> {
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-      Navigator.of(context).pop(); // schließt das Sheet
-      // Bei Erfolg direkt AccountMainPage anzeigen
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const AccountMainPage()),
-      );
+      // beide Sheets (Login & AuthChoice) schließen
+      Navigator.of(context).pop();
+      Navigator.of(context).pop();
+      // der authStateChanges-Listener im MainScaffold baut dann AccountMainPage neu auf
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Fehler beim Login: $e')),

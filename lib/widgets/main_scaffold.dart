@@ -22,13 +22,24 @@ class _MainScaffoldState extends State<MainScaffold> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    // Sobald sich der Auth-Status ändert, wird Account-Tab neu aufgebaut
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user != null && _currentIndex == 2) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: _pages),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (i) {
-          // Account-Tab und nicht eingeloggt? Dann BottomSheet zeigen
+          // Account-Tab und nicht eingeloggt? Dann AuthChoiceBody anzeigen
           if (i == 2 && FirebaseAuth.instance.currentUser == null) {
             showModalBottomSheet(
               context: context,
@@ -37,6 +48,7 @@ class _MainScaffoldState extends State<MainScaffold> {
             );
             return;
           }
+          // sonst Tab wechseln
           setState(() => _currentIndex = i);
         },
         type: BottomNavigationBarType.fixed,
