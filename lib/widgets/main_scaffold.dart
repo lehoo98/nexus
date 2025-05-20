@@ -1,70 +1,47 @@
+// lib/scaffold/main_scaffold.dart (oder widgets/main_scaffold.dart)
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_application_1/account_tab/account_main.dart';
-import 'package:flutter_application_1/account_tab/auth_choice_page.dart';
+import 'package:flutter_application_1/account_tab/auth_choice_body.dart'; // neu
 import '/scaffold/category_page.dart';
 import '/scaffold/nearby_handwerker_page.dart';
 
 class MainScaffold extends StatefulWidget {
   const MainScaffold({super.key});
-
-  @override
-  State<MainScaffold> createState() => _MainScaffoldState();
+  @override State<MainScaffold> createState() => _MainScaffoldState();
 }
 
 class _MainScaffoldState extends State<MainScaffold> {
   int _currentIndex = 0;
-
-  final List<Widget> _pages = [
+  final _pages = [
     const CategoryPage(),
     const NearbyHandwerkerPage(),
-    const AccountMainPage(), // Account-Seite
+    const AccountMainPage(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _pages,
-      ),
+      body: IndexedStack(index: _currentIndex, children: _pages),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        onTap: (index) async {
-          if (index == 2) {
-            final user = FirebaseAuth.instance.currentUser;
-
-            if (user == null) {
-              // ❌ Nicht eingeloggt → AuthChoicePage anzeigen
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AuthChoicePage()),
-              );
-              return; // ❗ wichtig: _currentIndex nicht ändern
-            }
+        onTap: (i) {
+          if (i == 2 && FirebaseAuth.instance.currentUser == null) {
+            // nicht eingeloggt → BottomSheet öffnen
+            showModalBottomSheet(
+              context: context,
+              builder: (_) => const AuthChoiceBody(),
+              isScrollControlled: true,
+            );
+            return;
           }
-
-          // ✅ Eingeloggt oder anderer Tab → Tab normal wechseln
-          setState(() => _currentIndex = index);
+          setState(() => _currentIndex = i);
         },
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-        backgroundColor: Colors.white,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.handyman),
-            label: 'Handwerker',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Account',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.handyman), label: 'Handwerker'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
         ],
       ),
     );

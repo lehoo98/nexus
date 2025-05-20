@@ -1,3 +1,5 @@
+// lib/account_tab/account_main.dart
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -35,20 +37,19 @@ class _AccountMainPageState extends State<AccountMainPage> {
         });
       }
     } else {
-      // Wenn gar kein User angemeldet ist, direkt logout
-      _signOutAndRedirect();
+      // Kein eingeloggter User: Lege loading false fest
+      if (mounted) setState(() => _loading = false);
     }
   }
 
-  /// Loggt aus und navigiert zur AuthChoicePage
-  void _signOutAndRedirect() {
-    FirebaseAuth.instance.signOut();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+  Future<void> _logout() async {
+    await FirebaseAuth.instance.signOut();
+    if (context.mounted) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const AuthChoicePage()),
+        MaterialPageRoute(builder: (_) => const AuthChoiceBody()),
       );
-    });
+    }
   }
 
   @override
@@ -56,13 +57,21 @@ class _AccountMainPageState extends State<AccountMainPage> {
     return AppShell(
       currentIndex: 2,
       child: Scaffold(
-        appBar: AppBar(title: const Text('Dein Account')),
+        appBar: AppBar(
+          title: const Text('Dein Account'),
+          actions: [
+            if (FirebaseAuth.instance.currentUser != null)
+              IconButton(
+                icon: const Icon(Icons.logout),
+                tooltip: 'Abmelden',
+                onPressed: _logout,
+              ),
+          ],
+        ),
         body: _loading
             ? const Center(child: CircularProgressIndicator())
             : _userModel == null
-                // Wenn kein Datensatz gefunden: automatisch ausloggen
-                ? _buildAutoLogout()
-                // Wenn Daten da sind: normales Profil anzeigen
+                ? const Center(child: Text('Keine Benutzerdaten gefunden.'))
                 : Padding(
                     padding: const EdgeInsets.all(24),
                     child: Column(
@@ -79,7 +88,9 @@ class _AccountMainPageState extends State<AccountMainPage> {
                         Text("📱 Telefon: ${_userModel!.phone}", style: _textStyle),
                         const SizedBox(height: 8),
                         Text(
-                          _userModel!.isPremium ? "🌟 Du bist PLUS-Mitglied!" : "🔓 Kein Plus-Abo aktiv",
+                          _userModel!.isPremium
+                              ? "🌟 Du bist PLUS-Mitglied!"
+                              : "🔓 Kein Plus-Abo aktiv",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -91,15 +102,6 @@ class _AccountMainPageState extends State<AccountMainPage> {
                   ),
       ),
     );
-  }
-
-  /// Gibt ein leeres Widget zurück und kickt den Sign-Out-Prozess an
-  Widget _buildAutoLogout() {
-    // Hier optional noch eine kurze Nachricht anzeigen,
-    // z.B. Center(child: Text("Abmeldung läuft..."))
-    // Wir geben aber einfach ein leeres SizedBox zurück:
-    _signOutAndRedirect();
-    return const SizedBox.shrink();
   }
 
   TextStyle get _textStyle => const TextStyle(

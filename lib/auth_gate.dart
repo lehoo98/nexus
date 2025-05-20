@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'widgets/main_scaffold.dart';
-import 'account_tab/auth_choice_page.dart';
+import 'account_tab/auth_choice_body.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -21,7 +21,7 @@ class AuthGate extends StatelessWidget {
         if (snapshot.hasData) {
           return const MainScaffold(); // ✅ User eingeloggt → App zeigen
         } else {
-          return const AuthChoicePage(); // ❌ Kein Login → Login/Register Auswahl
+          return const AuthChoiceBody(); // ❌ Kein Login → Login/Register Auswahl
         }
       },
     );
