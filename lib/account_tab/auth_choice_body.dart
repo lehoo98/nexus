@@ -1,18 +1,22 @@
-// lib/account_tab/auth_choice_body.dart
-
 import 'package:flutter/material.dart';
 import 'login_page.dart';
 import 'register_page.dart';
 
+/// Zeigt die beiden Buttons Login / Registrieren als BottomSheet-Body
 class AuthChoiceBody extends StatelessWidget {
   const AuthChoiceBody({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.only(
+        left: 24,
+        right: 24,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        top: 24,
+      ),
       child: Column(
-        mainAxisSize: MainAxisSize.min, // important for BottomSheet
+        mainAxisSize: MainAxisSize.min, // Nur so groß wie nötig
         children: [
           const Icon(Icons.account_circle, size: 72, color: Colors.teal),
           const SizedBox(height: 24),
@@ -27,9 +31,11 @@ class AuthChoiceBody extends StatelessWidget {
             label: const Text("Login"),
             style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(50)),
             onPressed: () {
-              Navigator.of(context).pop(); // schließt das Sheet
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const LoginPage(email: "")));
+              Navigator.of(context).pop();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginPage(email: "")),
+              );
             },
           ),
           const SizedBox(height: 12),
@@ -39,8 +45,10 @@ class AuthChoiceBody extends StatelessWidget {
             style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(50)),
             onPressed: () {
               Navigator.of(context).pop();
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const RegisterPage(email: "")));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const RegisterPage(email: "")),
+              );
             },
           ),
         ],
