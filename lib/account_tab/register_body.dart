@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/auth_helpers.dart';
-import 'account_main.dart';
 
 class RegisterBody extends StatefulWidget {
   const RegisterBody({super.key});
@@ -25,11 +24,11 @@ class _RegisterBodyState extends State<RegisterBody> {
     final confirm = confirmPasswordController.text.trim();
 
     if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ungültige E-Mail')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ungültige E-Mail-Adresse')));
       return;
     }
     if (pass.length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Passwort min. 6 Zeichen')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Passwort mindestens 6 Zeichen')));
       return;
     }
     if (pass != confirm) {
@@ -40,17 +39,21 @@ class _RegisterBodyState extends State<RegisterBody> {
     setState(() => isLoading = true);
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email, password: pass);
+        email: email,
+        password: pass,
+      );
+      // Firestore-Eintrag
       await handleUserCreation(
         name: nameController.text.trim(),
         address: addressController.text.trim(),
         phone: phoneController.text.trim(),
       );
-      // beide Sheets (Register & AuthChoice) schließen
-      Navigator.of(context).pop();
+      // Nur das Sheet schließen; MainScaffold reagiert auf authStateChanges
       Navigator.of(context).pop();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Fehler: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fehler bei Registrierung: $e')),
+      );
     } finally {
       if (mounted) setState(() => isLoading = false);
     }

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../models/user_model.dart';
-import '../../services/firestore_service.dart';
+import '../models/user_model.dart';
+import '../services/firestore_service.dart';
+// hier den korrekten Pfad zu deiner MainScaffold-Datei:
+import '../widgets/main_scaffold.dart';
 import '../widgets/app_shell.dart';
-import 'auth_choice_body.dart'; // Du brauchst auth_choice_body.dart nicht hier, nur zum Logout-Redirect
 
 class AccountMainPage extends StatefulWidget {
   const AccountMainPage({super.key});
@@ -28,12 +29,10 @@ class _AccountMainPageState extends State<AccountMainPage> {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
       final data = await _firestoreService.getUser(uid);
-      if (mounted) {
-        setState(() {
-          _userModel = data;
-          _loading = false;
-        });
-      }
+      if (mounted) setState(() {
+        _userModel = data;
+        _loading = false;
+      });
     } else {
       if (mounted) setState(() => _loading = false);
     }
@@ -41,11 +40,11 @@ class _AccountMainPageState extends State<AccountMainPage> {
 
   Future<void> _logout() async {
     await FirebaseAuth.instance.signOut();
-    // Zurück auf Home-Tab
-    if (mounted) {
-      Navigator.of(context).popUntil((route) => route.isFirst);
-      setState(() {}); // Rebuild, sodass BottomNav wieder AuthChoiceSheet zeigt
-    }
+    // Kompletten Stack auf Home-Tab zurücksetzen:
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const MainScaffold(initialIndex: 0)),
+      (route) => false,
+    );
   }
 
   @override
